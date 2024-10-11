@@ -52,9 +52,9 @@ export default {
       componentsList: [
         {name: '开始节点', icon: 'start-event', type: 'bpmn:startEvent'},
         {name: '结束节点', icon: 'end-event', type: 'bpmn:endEvent'},
-        {name: '定时器', icon: 'time-event', type: 'bpmn:intermediateCatchEvent'},
         {name: '排他网关', icon: 'exclusive-gateway', type: 'bpmn:exclusiveGateway'},
         {name: '并行网关', icon: 'parallel-gateway', type: 'bpmn:parallelGateway'},
+        {name: '定时器', icon: 'time-event', type: 'bpmn:intermediateCatchEvent'},
         {name: '用户任务', icon: 'user-task', type: 'bpmn:userTask'},
         {name: '脚本任务', icon: 'script-task', type: 'bpmn:scriptTask'},
       ],
