@@ -1,4 +1,4 @@
-import { getBpmnId } from './bpmnIds'
+import {getBpmnId} from '@logicflow/extension/es/bpmn-adapter/bpmnIds'
 import { handleAttributes, lfJson2Xml } from './json2xml'
 import { lfXml2Json } from './xml2json'
 
