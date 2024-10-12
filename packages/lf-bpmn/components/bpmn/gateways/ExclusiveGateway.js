@@ -56,7 +56,7 @@ class UserTaskView extends RectNode {
                 : this.props.model.id
         const style = model.getNodeStyle()
 
-        let stroke = '#19BE6B'
+        let stroke = '#FF9900'
 
         // svg dom <svg x="0" y="0" width="25" height="25" viewBox="0 0 1274 1024">
         return h(
