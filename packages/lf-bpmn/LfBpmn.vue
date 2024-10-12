@@ -174,8 +174,8 @@ export default {
        * 2. 重写 draw 方法
        * 3. 注册
        */
-      this.lf.register(StartEvent) // 注册开始节点
-      this.lf.register(EndEvent) // 注册结束节点
+      this.lf.register(StartEvent) // 注册开始事件
+      this.lf.register(EndEvent) // 注册结束事件
       this.lf.register(ExclusiveGateway) // 注册唯一条件
       this.lf.register(ParallelGateway) // 注册并行网关
       this.lf.register(TimerIntermediateCatchEvent) // 注册定时中间捕获事件
@@ -386,7 +386,7 @@ export default {
           }
         }
 
-        // 解决默认情况下解决结束节点默认为空的情况下xml缺失的问题。
+        // 解决默认情况下解决结束事件默认为空的情况下xml缺失的问题。
         for (let i = 0; i < endEvent && endEvent.length; i++) {
           let incoming = endEvent[i]['bpmn:incoming']
           if (

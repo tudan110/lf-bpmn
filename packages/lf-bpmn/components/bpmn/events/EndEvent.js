@@ -38,8 +38,8 @@ class UserTaskModel extends RectNodeModel {
 
     initNodeData(data) {
         super.initNodeData(data)
-        this.width = 60
-        this.height = 60
+        this.width = 40
+        this.height = 40
     }
 }
 
@@ -57,61 +57,37 @@ class UserTaskView extends RectNode {
         let stroke = '#ED4014'
 
         return h(
-            'svg',
-            {
+            'svg', {
                 x: x - width / 2,
                 y: y - height / 2,
-                width: 60,
-                height: 60,
+                width: 40,
+                height: 40,
                 viewBox: '0 0 24 24'
             },
             [
-                // svg dom <path fill="#2D8CF0" d="M512 960C264.96 960 64 759.04 64 512S264.96 64 512 64s448 200.96 448 448-200.96 448-448 448z m0-832c-211.744 0-384 172.256-384 384s172.256 384 384 384 384-172.256 384-384-172.256-384-384-384z"></path>
-                h('title', {
-                    innerText: '结束节点'
-                }),
-                // svg dom <path fill="#2D8CF0" fill-opacity="0.05" d="M512 512m-448 0a448 448 0 1 0 896 0 448 448 0 1 0-896 0Z"></path>
                 h(
-                    'g',
-                    {
-                        id: '网管',
-                        stroke: 'none',
-                        strokeWidth: '1',
-                        fill: 'none',
-                        fillRule: 'evenodd'
+                    'g', {
+                        transform: 'translate(-583.000000, -142.000000)',
+                        fill: stroke
                     },
                     [
                         h(
-                            'g',
-                            {
-                                id: '流程管理',
-                                transform: 'translate(-583.000000, -142.000000)',
+                            'g', {
+                                transform: 'translate(583.000000, 142.000000)',
                                 fill: stroke
                             },
                             [
-                                h(
-                                    'g',
-                                    {
-                                        id: '编组-48',
-                                        transform: 'translate(583.000000, 142.000000)',
-                                        fill: stroke
-                                    },
-                                    [
-                                        h('circle', {
-                                            id: '椭圆形',
-                                            stroke: stroke,
-                                            fillOpacity: '0.05',
-                                            cx: '12',
-                                            cy: '12',
-                                            r: '11.5'
-                                        }),
-                                        h('path', {
-                                            id: '路径',
-                                            d: 'M15.9353055,14.9729419 C15.9353055,15.3923555 15.5921489,15.7355121 15.1727353,15.7355121 L8.7625702,15.7355121 C8.34141431,15.7355121 8,15.3940978 8,14.9729419 L8,8.7625702 C8,8.34141431 8.34141431,8 8.7625702,8 L15.1727353,8 C15.5921489,8 15.9353055,8.34315659 15.9353055,8.7625702 L15.9353055,14.9729419 L15.9353055,14.9729419 Z',
-                                            fillRule: 'nonzero'
-                                        })
-                                    ]
-                                )
+                                h('circle', {
+                                    stroke: stroke,
+                                    fillOpacity: '0.05',
+                                    cx: '12',
+                                    cy: '12',
+                                    r: '11.5'
+                                }),
+                                h('path', {
+                                    fillRule: 'nonzero',
+                                    d: 'M15.9353055,14.9729419 C15.9353055,15.3923555 15.5921489,15.7355121 15.1727353,15.7355121 L8.7625702,15.7355121 C8.34141431,15.7355121 8,15.3940978 8,14.9729419 L8,8.7625702 C8,8.34141431 8.34141431,8 8.7625702,8 L15.1727353,8 C15.5921489,8 15.9353055,8.34315659 15.9353055,8.7625702 L15.9353055,14.9729419 L15.9353055,14.9729419 Z'
+                                })
                             ]
                         )
                     ]

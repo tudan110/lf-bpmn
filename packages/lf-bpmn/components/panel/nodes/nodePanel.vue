@@ -50,8 +50,8 @@ export default {
       showServiceNode: true,
       // 节点列表
       componentsList: [
-        {name: '开始节点', icon: 'start-event', type: 'bpmn:startEvent'},
-        {name: '结束节点', icon: 'end-event', type: 'bpmn:endEvent'},
+        {name: '开始事件', icon: 'start-event', type: 'bpmn:startEvent'},
+        {name: '结束事件', icon: 'end-event', type: 'bpmn:endEvent'},
         {name: '排他网关', icon: 'exclusive-gateway', type: 'bpmn:exclusiveGateway'},
         {name: '并行网关', icon: 'parallel-gateway', type: 'bpmn:parallelGateway'},
         {name: '定时中间捕获事件', icon: 'timer-intermediate-catch-event', type: 'bpmn:intermediateCatchEvent'},
@@ -74,7 +74,7 @@ export default {
      */
     $_dragNode(item) {
 
-      // 默认obj是开始节点的的设置
+      // 默认obj是开始事件的的设置
       let obj = {
         id: extend.getRandomUUID(),
         type: item.type,
