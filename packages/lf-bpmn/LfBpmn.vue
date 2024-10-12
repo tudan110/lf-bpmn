@@ -61,9 +61,9 @@ import '@logicflow/extension/lib/style/index.css' // 引入LogicFlow扩展库样
 // 节点
 import StartEvent from './components/bpmn/events/StartEvent'
 import EndEvent from './components/bpmn/events/EndEvent'
-import TimeEvent from './components/bpmn/events/TimeEvent'
 import ExclusiveGateway from './components/bpmn/gateways/ExclusiveGateway'
 import ParallelGateway from './components/bpmn/gateways/ParallelGateway'
+import TimerIntermediateCatchEvent from './components/bpmn/events/TimerIntermediateCatchEvent'
 import ServiceTask from './components/bpmn/tasks/ServiceTask'
 import UserTask from './components/bpmn/tasks/UserTask'
 import scriptTask from './components/bpmn/tasks/scriptTask'
@@ -176,9 +176,9 @@ export default {
        */
       this.lf.register(StartEvent) // 注册开始节点
       this.lf.register(EndEvent) // 注册结束节点
-      this.lf.register(TimeEvent) // 注册定时器事件
       this.lf.register(ExclusiveGateway) // 注册唯一条件
       this.lf.register(ParallelGateway) // 注册并行网关
+      this.lf.register(TimerIntermediateCatchEvent) // 注册定时中间捕获事件
       this.lf.register(UserTask) // 注册用户任务
       this.lf.register(ServiceTask) // 注册服务任务
       this.lf.register(scriptTask) // 注册脚本任务

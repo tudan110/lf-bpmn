@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg"
 >
-    <title>定时器</title>
+    <title>定时中间捕获事件</title>
     <g id="" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
         <g id="" transform="translate(-583.000000, -200.000000)" fill="#2D8CF0">
             <g id="编组-59" transform="translate(583.000000, 200.000000)">

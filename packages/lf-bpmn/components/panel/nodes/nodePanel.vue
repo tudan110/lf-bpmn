@@ -54,7 +54,7 @@ export default {
         {name: '结束节点', icon: 'end-event', type: 'bpmn:endEvent'},
         {name: '排他网关', icon: 'exclusive-gateway', type: 'bpmn:exclusiveGateway'},
         {name: '并行网关', icon: 'parallel-gateway', type: 'bpmn:parallelGateway'},
-        {name: '定时器', icon: 'time-event', type: 'bpmn:intermediateCatchEvent'},
+        {name: '定时中间捕获事件', icon: 'timer-intermediate-catch-event', type: 'bpmn:intermediateCatchEvent'},
         {name: '用户任务', icon: 'user-task', type: 'bpmn:userTask'},
         {name: '脚本任务', icon: 'script-task', type: 'bpmn:scriptTask'},
       ],
@@ -110,7 +110,7 @@ export default {
       } else if (item.type === 'bpmn:exclusiveGateway' || item.type === 'bpmn:parallelGateway') {
         obj.properties = {}
       } else if (item.type === 'bpmn:intermediateCatchEvent') {
-        // 定时器节点
+        // 定时中间捕获事件
         obj.properties = {
           ['-camunda:asyncBefore']: 'true',
           ['bpmn:extensionElements']: {
@@ -189,16 +189,10 @@ export default {
       // console.log("🚀 ~ file: nodePanel.vue:129 ~ dragLeave ~ node", node);
       if (node.data.pid === '-1') return
 
-
-      this.$store.commit('SET_serviceNode', node)
       try {
 
         let delegateExpression = '${AtomicAbilityTask}'
-        if (node.data.abilityType === 'cncc_vcmd') {
-          delegateExpression = '${AtomicAbilityTask}'
-        } else if (node.data.abilityType === 'cncc_api') {
-          delegateExpression = '${AtomicAbilityTaskApi}'
-        } else if (node.data.abilityType === 'restful_api') {
+        if (node.data.abilityType === 'restful_api') {
           delegateExpression = '${AtomicAbilityTaskRestful}'
         }
 
@@ -216,11 +210,7 @@ export default {
         }
 
         let activityType = bpmnNodeType.serviceTask
-        if (node.data.abilityType === 'cncc_vcmd') {
-          activityType = bpmnNodeType.serviceTask
-        } else if (node.data.abilityType === 'cncc_api') {
-          activityType = bpmnNodeType.serviceTaskApi
-        } else if (node.data.abilityType === 'restful_api') {
+        if (node.data.abilityType === 'restful_api') {
           activityType = bpmnNodeType.serviceTaskRestful
         }
 
@@ -232,8 +222,6 @@ export default {
         }
 
         nodeConfig.properties.dirflowsid = node.data.id
-
-        this.$store.dispatch('set_dirflowsid', node.data.id)
 
         this.lf.dnd.startDrag(nodeConfig)
 

@@ -66,7 +66,7 @@ class UserTaskView extends RectNode {
             [
                 // svg dom <path fill="#2D8CF0" d="M512 960C264.96 960 64 759.04 64 512S264.96 64 512 64s448 200.96 448 448-200.96 448-448 448z m0-832c-211.744 0-384 172.256-384 384s172.256 384 384 384 384-172.256 384-384-172.256-384-384-384z"></path>
                 h('title', {
-                    innerText: '定时器'
+                    innerText: '定时中间捕获事件'
                 }),
                 // svg dom <path fill="#2D8CF0" fill-opacity="0.05" d="M512 512m-448 0a448 448 0 1 0 896 0 448 448 0 1 0-896 0Z"></path>
                 h(

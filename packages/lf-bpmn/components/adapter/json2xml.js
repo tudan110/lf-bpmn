@@ -20,20 +20,7 @@ function toXml(v, name, ind, deep) {
             && name !== bpmnNodeType.subProcess
             && name !== bpmnNodeType.scriptTask
             && name !== bpmnNodeType.serviceTask
-            && name !== bpmnNodeType.serviceTaskApi
-            && name !== bpmnNodeType.serviceTaskRestful
-            && name !== bpmnNodeType.serviceTaskParamConversion
-            && name !== bpmnNodeType.serviceTaskCmdAggregation
-            && name !== bpmnNodeType.endEvent
-            && name !== bpmnNodeType.mtExtract
-            && name !== bpmnNodeType.mtQuery
-            && name !== bpmnNodeType.mtJoin
-            && name !== bpmnNodeType.mtConnect
-            && name !== bpmnNodeType.mtCompare
-            && name !== bpmnNodeType.mtLoad
-            && name !== bpmnNodeType.mtLoadKafka
-            && name !== bpmnNodeType.mtLoadCeph
-            && name !== bpmnNodeType.mtLoadSftp) {
+            && name !== bpmnNodeType.endEvent) {
 
             delete v['bpmn:multiInstanceLoopCharacteristics']
             delete v['bpmn:timerEventDefinition']
@@ -46,7 +33,7 @@ function toXml(v, name, ind, deep) {
             if (jsoandata['bpmn:multiInstanceLoopCharacteristics']) {
                 v['bpmn:multiInstanceLoopCharacteristics'] = jsoandata['bpmn:multiInstanceLoopCharacteristics']
             }
-            // 将元素的定时器节点放到outgoing的后面
+            // 将元素的定时中间捕获事件放到outgoing的后面
 
             if (jsoandata['bpmn:timerEventDefinition']) {
                 v['bpmn:timerEventDefinition'] = jsoandata['bpmn:timerEventDefinition']
@@ -56,12 +43,12 @@ function toXml(v, name, ind, deep) {
         } else if (name === bpmnNodeType.subProcess) {
 
             let incoming_index = arr.indexOf('bpmn:incoming')
-            let outcoming_index = arr.indexOf('bpmn:outgoing')
+            let outgoing_index = arr.indexOf('bpmn:outgoing')
             if (incoming_index > -1) {
                 arr.splice(incoming_index, 1)
 
-            } else if (outcoming_index > -1) {
-                arr.splice(outcoming_index, 1)
+            } else if (outgoing_index > -1) {
+                arr.splice(outgoing_index, 1)
             }
             arr.unshift('bpmn:outgoing')
             arr.unshift('bpmn:incoming')
@@ -79,26 +66,6 @@ function toXml(v, name, ind, deep) {
                 arr.splice(scriptTask, 1)
             }
 
-            /* 脚本参数映射信息不要保存到 xml 里面 start */
-            let info = arr.indexOf('info')
-            if (info > -1) {
-                arr.splice(info, 1)
-                delete v['info']
-            }
-
-            let inputParamList = arr.indexOf('inputParamList')
-            if (inputParamList > -1) {
-                arr.splice(inputParamList, 1)
-                delete v['inputParamList']
-            }
-
-            let outputParamList = arr.indexOf('outputParamList')
-            if (outputParamList > -1) {
-                arr.splice(outputParamList, 1)
-                delete v['outputParamList']
-            }
-            /* 自定义参数映射信息不要保存到 xml 里面 end */
-
             arr.push('bpmn:script')
             arr.forEach(item => {
                 delete v[item]
@@ -107,88 +74,6 @@ function toXml(v, name, ind, deep) {
                 // console.log('item---', item)
                 v[item] = jsoandata[item]
             })
-        } else if (name === bpmnNodeType.serviceTask
-            || name === bpmnNodeType.serviceTaskApi
-            || name === bpmnNodeType.serviceTaskRestful) {
-
-            /* 服务节点参数映射信息不要保存到 xml 里面 start */
-            removeApiInfo(arr, v)
-            removeVcmdInfo(arr, v)
-            /* 自定义参数映射信息不要保存到 xml 里面 end */
-
-        } else if (name === bpmnNodeType.serviceTaskParamConversion) {
-
-            /* 结束事件参数映射信息不要保存到 xml 里面 start */
-            // removeApiInfo(arr, v)
-            removeParamConversionList(arr, v)
-            /* 自定义参数映射信息不要保存到 xml 里面 end */
-
-        } else if (name === bpmnNodeType.endEvent || name === bpmnNodeType.serviceTaskCmdAggregation) {
-
-            /* 结束事件参数映射信息不要保存到 xml 里面 start */
-            removeApiInfo(arr, v)
-            /* 自定义参数映射信息不要保存到 xml 里面 end */
-
-        } else if (name === bpmnNodeType.mtExtract) {
-
-            /* 服务节点参数映射信息不要保存到 xml 里面 start */
-            /* 自定义参数映射信息不要保存到 xml 里面 end */
-
-        } else if (name === bpmnNodeType.mtQuery) {
-
-            /* 服务节点参数映射信息不要保存到 xml 里面 start */
-            removeParamMappingList(arr, v)
-            removeMtRuleForm(arr, v)
-            /* 自定义参数映射信息不要保存到 xml 里面 end */
-
-        } else if (name === bpmnNodeType.mtJoin) {
-
-            /* 服务节点参数映射信息不要保存到 xml 里面 start */
-            removeParamMappingList(arr, v)
-            removeMtForm(arr, v)
-            removeMtRuleForm(arr, v)
-            /* 自定义参数映射信息不要保存到 xml 里面 end */
-
-        } else if (name === bpmnNodeType.mtConnect) {
-
-            /* 服务节点参数映射信息不要保存到 xml 里面 start */
-            removeParamMappingList(arr, v)
-            removeMtForm(arr, v)
-            removeMtRuleForm(arr, v)
-            /* 自定义参数映射信息不要保存到 xml 里面 end */
-
-        } else if (name === bpmnNodeType.mtCompare) {
-
-            /* 服务节点参数映射信息不要保存到 xml 里面 start */
-            removeParamMappingList(arr, v)
-            removeMtForm(arr, v)
-            removeMtRuleForm(arr, v)
-            /* 自定义参数映射信息不要保存到 xml 里面 end */
-
-        } else if (name === bpmnNodeType.mtLoad) {
-
-            /* 服务节点参数映射信息不要保存到 xml 里面 start */
-            removeMtForm(arr, v)
-            /* 自定义参数映射信息不要保存到 xml 里面 end */
-
-        } else if (name === bpmnNodeType.mtLoadKafka) {
-
-            /* 服务节点参数映射信息不要保存到 xml 里面 start */
-            removeMtForm(arr, v)
-            /* 自定义参数映射信息不要保存到 xml 里面 end */
-
-        } else if (name === bpmnNodeType.mtLoadCeph) {
-
-            /* 服务节点参数映射信息不要保存到 xml 里面 start */
-            removeMtForm(arr, v)
-            /* 自定义参数映射信息不要保存到 xml 里面 end */
-
-        } else if (name === bpmnNodeType.mtLoadSftp) {
-
-            /* 服务节点参数映射信息不要保存到 xml 里面 start */
-            removeMtForm(arr, v)
-            /* 自定义参数映射信息不要保存到 xml 里面 end */
-
         }
     }
 
@@ -204,19 +89,7 @@ function toXml(v, name, ind, deep) {
 
         // 自定义节点标签，适配 bpmn
         let tagName = name
-        if (name === bpmnNodeType.serviceTaskApi
-            || name === bpmnNodeType.serviceTaskRestful
-            || name === bpmnNodeType.serviceTaskParamConversion
-            || name === bpmnNodeType.serviceTaskCmdAggregation
-            || name === bpmnNodeType.mtExtract
-            || name === bpmnNodeType.mtQuery
-            || name === bpmnNodeType.mtJoin
-            || name === bpmnNodeType.mtConnect
-            || name === bpmnNodeType.mtCompare
-            || name === bpmnNodeType.mtLoad
-            || name === bpmnNodeType.mtLoadKafka
-            || name === bpmnNodeType.mtLoadCeph
-            || name === bpmnNodeType.mtLoadSftp) {
+        if (name === bpmnNodeType.serviceTaskRestful) {
             // 自定义节点，在保存之前，节点名转换为 bpmn 支持的
             tagName = bpmnNodeType.serviceTask
         }
@@ -290,97 +163,12 @@ function Json2Xml(o) {
 }
 
 /**
- * bpmn 删除自定义信息
- * @param arr
- * @param v
- * @param key
- */
-function removeInfoKey(arr, v, key) {
-    let infoKey = arr.indexOf(key)
-    if (infoKey > -1) {
-        arr.splice(infoKey, 1)
-        delete v[key]
-    }
-}
-
-/**
- * bpmn 删除自定义信息
- * @param arr
- * @param v
- */
-function removeApiInfo(arr, v) {
-    removeInfoKey(arr, v, 'info')
-    removeInfoKey(arr, v, '-info')
-
-    removeInfoKey(arr, v, 'dirflowsid')
-    removeInfoKey(arr, v, '-dirflowsid')
-
-    removeInfoKey(arr, v, 'inputParamList')
-    removeInfoKey(arr, v, '-inputParamList')
-
-    removeInfoKey(arr, v, 'outputParamList')
-    removeInfoKey(arr, v, '-outputParamList')
-}
-
-/**
- * bpmn 删除自定义信息
- * @param arr
- * @param v
- */
-function removeVcmdInfo(arr, v) {
-    removeInfoKey(arr, v, 'virtualCmdInputParamList')
-    removeInfoKey(arr, v, '-virtualCmdInputParamList')
-
-    removeInfoKey(arr, v, 'virtualCmdOutputParamList')
-    removeInfoKey(arr, v, '-virtualCmdOutputParamList')
-}
-
-/**
- * bpmn 删除自定义参数映射信息
- * @param arr
- * @param v
- */
-function removeParamMappingList(arr, v) {
-    removeInfoKey(arr, v, 'paramMappingList')
-    removeInfoKey(arr, v, '-paramMappingList')
-}
-
-/**
- * bpmn 删除自定义参数映射信息
- * @param arr
- * @param v
- */
-function removeParamConversionList(arr, v) {
-    removeInfoKey(arr, v, 'paramConversionList')
-    removeInfoKey(arr, v, '-paramConversionList')
-}
-
-/**
- * bpmn 删除自定义模转表单信息
- * @param arr
- * @param v
- */
-function removeMtForm(arr, v) {
-    removeInfoKey(arr, v, 'form')
-    removeInfoKey(arr, v, '-form')
-}
-
-/**
- * bpmn 删除自定义模转转换规则表单信息
- * @param arr
- * @param v
- */
-function removeMtRuleForm(arr, v) {
-    removeInfoKey(arr, v, 'ruleForm')
-    removeInfoKey(arr, v, '-ruleForm')
-}
-
-/**
  * 是否包含 bpmn 属性
  * @param obj
  * @returns {boolean}
  */
 function hasBPMNProperties(obj) {
+    // eslint-disable-next-line no-prototype-builtins
     return obj.hasOwnProperty('bpmn:script') || obj.hasOwnProperty('bpmn:incoming') || obj.hasOwnProperty('bpmn:outgoing')
 }
 
