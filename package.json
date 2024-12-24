@@ -25,8 +25,8 @@
     "url": "https://github.com/tudan110/lf-bpmn/issues"
   },
   "dependencies": {
-    "@logicflow/core": "^2.0.6",
-    "@logicflow/extension": "^2.0.10",
+    "@logicflow/core": "^2.0.10",
+    "@logicflow/extension": "^2.0.14",
     "core-js": "^3.8.3",
     "element-ui": "2.15.14",
     "sass": "1.32.13",

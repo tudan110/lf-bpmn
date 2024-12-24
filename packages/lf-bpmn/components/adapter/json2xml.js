@@ -11,9 +11,13 @@ function addIndSpace(ind, deep) {
 function toXml(v, name, ind, deep) {
 
     // 修改 删除连线之后，再次连线时候bpmn:incoming 和bpmn:outgoing位置错乱的问题开始
-    let jsoandata = extend.deepClone(v)
+    let jsonData = extend.deepClone(v)
     if (Object.prototype.toString.call(v) === '[object Object]') {
+
         let arr = Object.keys(v)
+
+        // bpmn 删除 LogicFlow 携带的 宽高 属性
+        removeWidthHeight(name, arr, v)
 
         if (arr.indexOf(bpmnNodeType.outgoing) > -1
             && arr.indexOf(bpmnNodeType.incoming) > -1
@@ -26,17 +30,17 @@ function toXml(v, name, ind, deep) {
             delete v['bpmn:timerEventDefinition']
             delete v['bpmn:outgoing']
             delete v['bpmn:incoming']
-            v['bpmn:incoming'] = jsoandata['bpmn:incoming']
-            v['bpmn:outgoing'] = jsoandata['bpmn:outgoing']
+            v['bpmn:incoming'] = jsonData['bpmn:incoming']
+            v['bpmn:outgoing'] = jsonData['bpmn:outgoing']
 
             // 将元素是否循环的节点放到outgoing的后面
-            if (jsoandata['bpmn:multiInstanceLoopCharacteristics']) {
-                v['bpmn:multiInstanceLoopCharacteristics'] = jsoandata['bpmn:multiInstanceLoopCharacteristics']
+            if (jsonData['bpmn:multiInstanceLoopCharacteristics']) {
+                v['bpmn:multiInstanceLoopCharacteristics'] = jsonData['bpmn:multiInstanceLoopCharacteristics']
             }
             // 将元素的定时中间捕获事件放到outgoing的后面
 
-            if (jsoandata['bpmn:timerEventDefinition']) {
-                v['bpmn:timerEventDefinition'] = jsoandata['bpmn:timerEventDefinition']
+            if (jsonData['bpmn:timerEventDefinition']) {
+                v['bpmn:timerEventDefinition'] = jsonData['bpmn:timerEventDefinition']
             }
 
             //  console.log("v-after",v)
@@ -57,7 +61,7 @@ function toXml(v, name, ind, deep) {
             })
             arr.forEach(item => {
                 // console.log('item---', item)
-                v[item] = jsoandata[item]
+                v[item] = jsonData[item]
             })
         } else if (name === bpmnNodeType.scriptTask) {
 
@@ -72,7 +76,7 @@ function toXml(v, name, ind, deep) {
             })
             arr.forEach(item => {
                 // console.log('item---', item)
-                v[item] = jsoandata[item]
+                v[item] = jsonData[item]
             })
         }
     }
@@ -163,13 +167,46 @@ function Json2Xml(o) {
 }
 
 /**
+ * bpmn 删除自定义信息
+ * @param arr
+ * @param v
+ * @param key
+ */
+function removeInfoKey(arr, v, key) {
+    let infoKey = arr.indexOf(key)
+    if (infoKey > -1) {
+        arr.splice(infoKey, 1)
+        delete v[key]
+    }
+}
+
+/**
+ * bpmn 删除 LogicFlow 携带的 宽高 属性
+ * @param name
+ * @param arr
+ * @param v
+ */
+function removeWidthHeight(name, arr, v) {
+
+    if (name === 'dc:Bounds') {
+        return
+    }
+
+    removeInfoKey(arr, v, 'width')
+    removeInfoKey(arr, v, '-width')
+    removeInfoKey(arr, v, 'height')
+    removeInfoKey(arr, v, '-height')
+
+}
+
+/**
  * 是否包含 bpmn 属性
  * @param obj
  * @returns {boolean}
  */
 function hasBPMNProperties(obj) {
     // eslint-disable-next-line no-prototype-builtins
-    return obj.hasOwnProperty('bpmn:script') || obj.hasOwnProperty('bpmn:incoming') || obj.hasOwnProperty('bpmn:outgoing')
+    return obj.hasOwnProperty('bpmn:script') || obj.hasOwnProperty('bpmn:incoming') || obj.hasOwnProperty('bpmn:outgoing') || obj.hasOwnProperty('bpmn:timerEventDefinition')
 }
 
 export {Json2Xml}
