@@ -56,6 +56,7 @@ export default {
         {name: '并行网关', icon: 'parallel-gateway', type: 'bpmn:parallelGateway'},
         {name: '定时中间捕获事件', icon: 'timer-intermediate-catch-event', type: 'bpmn:intermediateCatchEvent'},
         {name: '用户任务', icon: 'user-task', type: 'bpmn:userTask'},
+        {name: '服务任务', icon: 'service-task', type: 'bpmn:serviceTask'},
         {name: '脚本任务', icon: 'script-task', type: 'bpmn:scriptTask'},
       ],
       // 搜索参数
