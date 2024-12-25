@@ -16,12 +16,12 @@ module.exports = {
         // set svg-sprite-loader
         config.module
             .rule('svg')
-            .exclude.add(resolve('packages/lf-bpmn/assets/icons'))
+            .exclude.add(resolve('packages/lf-bpmn/assets/icons')).add(resolve('src/assets/icons'))
             .end()
         config.module
             .rule('icons')
             .test(/\.svg$/)
-            .include.add(resolve('packages/lf-bpmn/assets/icons'))
+            .include.add(resolve('packages/lf-bpmn/assets/icons')).add(resolve('src/assets/icons'))
             .end()
             .use('svg-sprite-loader')
             .loader('svg-sprite-loader')
