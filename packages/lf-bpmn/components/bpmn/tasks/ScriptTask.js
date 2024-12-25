@@ -12,8 +12,8 @@
  * 7、HTML节点：HtmlNode      import { HtmlNode, HtmlNodeModel } from "@logicflow/core"
  */
 
-import {h, RectNode, RectNodeModel} from '@logicflow/core' // 用于创建虚拟dom // 用于继承基础节点
 import {bpmnConst, bpmnNodeType} from '../../constants/bpmn-constant'
+import {h, RectNode, RectNodeModel} from '@logicflow/core' // 用于创建虚拟dom // 用于继承基础节点
 
 // 自定义节点的model 可以修改节点的样式，基础形状，位置等
 class ScriptTaskModel extends RectNodeModel {
