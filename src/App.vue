@@ -1,7 +1,9 @@
 <template>
   <div id="app">
     <LfBpmn
-        :custom-components="customComponents"/>
+        :custom-components="customComponents"
+        @click="onClick"
+    />
   </div>
 </template>
 
@@ -14,6 +16,11 @@ export default {
   data() {
     return {
       customComponents: [SendTask],
+    }
+  },
+  methods: {
+    onClick(node) {
+      console.log(node)
     }
   }
 }

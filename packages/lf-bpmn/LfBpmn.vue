@@ -1,6 +1,17 @@
 <template>
   <div class="life-cycle" ref="life-cycle">
 
+    <div>
+      <el-button
+          size="small"
+          plain
+          type="primary"
+          @click="save()"
+          icon="el-icon-check"
+      >保存
+      </el-button>
+    </div>
+
     <div class="life-cycle-items">
 
       <!-- 画布 -->
@@ -202,7 +213,9 @@ export default {
 
       // 监听节点点击事件
       this.lf.on('element:click', (node) => {
-        console.log('element:click', node)
+
+        // console.log('element:click', node)
+
         if (node.data.type === 'bpmn:sequenceFlow') {
           let sourceNodeType = this.lf.getNodeDataById(
               node.data.sourceNodeId
@@ -218,11 +231,10 @@ export default {
 
         this.clickedElement = node.data
 
-        /*if (node.data.type !== 'bpmn:exclusiveGateway' && node.data.type !== 'bpmn:parallelGateway') {
-          that.$refs.editProperties.$emit('expandPanel')
-        } else {
-          that.$refs.editProperties.$emit('foldPanel')
-        }*/
+        this.$emit('click', {
+          type: this.elementType,
+          data: node.data
+        })
 
       })
 
@@ -241,12 +253,6 @@ export default {
           this.elementType = node.data.type
         }
       })
-
-      // 画布单击，收起上下表单面板
-      /*let that = this
-      this.lf.on('blank:click', e => {
-        that.$refs.editProperties.$emit('foldPanel')
-      })*/
 
     },
     countPosition() {
@@ -307,13 +313,11 @@ export default {
     // 保存
     save() {
 
-      this.$emit('saving', true)
       let rawData = this.lf.getGraphRawData()
       if (!rawData.nodes.length
           && !rawData.edges.length) {
         // console.log("画布无内容")
         this.$modal.msgWarning('画布无内容')
-        this.$emit('saving', false)
       } else {
 
         let serviceTaskid = []
@@ -488,7 +492,6 @@ export default {
         obj.flow_name = this.clickedTreeItem.flow_name // 流程名称
         obj.flow_describe = this.clickedTreeItem.flow_detail // 流程描述
         // 流程的同步异步，由api定义
-        obj.isAsyn = this.apiInfoForm.invokeMethod === 'sync' ? 1 : 0 // 是否异步
 
         console.log(
             'this.clickedTreeItem.flowContext---------------------',
@@ -505,6 +508,8 @@ export default {
             )
           }
         }
+
+        console.log('obj', obj)
 
       }
     },
