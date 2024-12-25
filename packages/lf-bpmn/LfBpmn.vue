@@ -96,13 +96,6 @@ export default {
     return {
       queryParams: [], // query 入参
       inputParams: [], // body 入参
-      flowState: [
-        '- 编辑中',
-        '- 测试中',
-        '- 审核中',
-        '- 发布中',
-        '- 发布成功'
-      ],
       apiId: null,
       modelId: null,
       expandedNodePanel: true,
@@ -260,8 +253,7 @@ export default {
 
         distance_x.push(item.x - 0)
         distance_y.push(item.y - 0)
-        let distance = x * x + y * y
-        item.distance = distance
+        item.distance = x * x + y * y
         return item
       })
       distance_y.sort((a, b) => {
@@ -274,7 +266,7 @@ export default {
       node.sort((a, b) => {
         return b.distance - a.distance
       })
-      if (node.length == 0) {
+      if (node.length === 0) {
         return false
       }
       targetX =
@@ -302,7 +294,7 @@ export default {
       })
     },
     // 保存
-    async save() {
+    save() {
 
       this.$emit('saving', true)
       let rawData = this.lf.getGraphRawData()
@@ -442,10 +434,10 @@ export default {
           } else {
             serviceTaskidlist = serviceTasknode
           }
+
           // 服务节是否循环 关闭循环的时候将 自定义节点的 multiInstanceLoopCharacteristics 删除
           for (let i = 0; i < serviceTaskidlist.length; i++) {
-            let multiInstanceLoopCharacteristics = serviceTaskidlist[i]
-                ['bpmn:multiInstanceLoopCharacteristics']
+            let multiInstanceLoopCharacteristics = serviceTaskidlist[i]['bpmn:multiInstanceLoopCharacteristics']
                 ? JSON.parse(
                     JSON.stringify(
                         serviceTaskidlist[i]['bpmn:multiInstanceLoopCharacteristics']
