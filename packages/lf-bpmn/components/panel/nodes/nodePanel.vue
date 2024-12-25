@@ -2,24 +2,46 @@
   <div class="node-panel">
 
     <div class="fold_div">
+
+      <!-- 基础组件 -->
       <div class="tree-title">
-        <div @click="showBaseComponent = !showBaseComponent">
+        <div @click="showBaseComponents = !showBaseComponents">
           <svg-icon
               icon-class="arrow-down"
               class="btn"
-              v-if="showBaseComponent"
-          />
+              v-if="showBaseComponents"/>
           <svg-icon icon-class="arrow-right" class="btn" v-else/>
           <span>基础组件</span>
         </div>
       </div>
-      <div class="component-box" v-if="showBaseComponent">
+      <div class="component-box" v-if="showBaseComponents">
         <div
             class="component-item"
-            v-for="(item, index) in componentsList"
+            v-for="(item, index) in baseComponents"
             :key="index"
-            @mousedown="$_dragNode(item)"
-        >
+            @mousedown="$_dragNode(item)">
+          <svg-icon :icon-class="item.icon" class="component-icon"/>
+          <span>{{ item.name }}</span>
+        </div>
+      </div>
+
+      <!-- 自定义组件 -->
+      <div class="tree-title">
+        <div @click="showCustomComponents = !showCustomComponents">
+          <svg-icon
+              icon-class="arrow-down"
+              class="btn"
+              v-if="showCustomComponents"/>
+          <svg-icon icon-class="arrow-right" class="btn" v-else/>
+          <span>自定义组件</span>
+        </div>
+      </div>
+      <div class="component-box" v-if="showCustomComponents">
+        <div
+            class="component-item"
+            v-for="(item, index) in customComponentsMetadata"
+            :key="index"
+            @mousedown="$_dragNode(item)">
           <svg-icon :icon-class="item.icon" class="component-icon"/>
           <span>{{ item.name }}</span>
         </div>
@@ -36,20 +58,21 @@ import extend from '../../../utils/extend'
 import {bpmnNodeType} from '../../constants/bpmn-constant'
 
 export default {
-  //注册draggable组件
   components: {},
   props: {
     lf: Object,
+    customComponentsMetadata: {
+      type: Array,
+      default: () => []
+    },
   },
   data() {
     return {
       loading: false,
       // 是否显示基础组件
-      showBaseComponent: true,
-      // 是否显示原子能力库
-      showServiceNode: true,
-      // 节点列表
-      componentsList: [
+      showBaseComponents: true,
+      // 基础组件
+      baseComponents: [
         {name: '开始事件', icon: 'start-event', type: 'bpmn:startEvent'},
         {name: '结束事件', icon: 'end-event', type: 'bpmn:endEvent'},
         {name: '排他网关', icon: 'exclusive-gateway', type: 'bpmn:exclusiveGateway'},
@@ -59,6 +82,10 @@ export default {
         {name: '服务任务', icon: 'service-task', type: 'bpmn:serviceTask'},
         {name: '脚本任务', icon: 'script-task', type: 'bpmn:scriptTask'},
       ],
+      // 是否显示自定义组件
+      showCustomComponents: true,
+      // 是否显示原子能力库
+      showServiceNode: true,
       // 搜索参数
       searchParam: '',
     }

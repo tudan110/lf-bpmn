@@ -1,17 +1,23 @@
 <template>
   <div id="app">
-    <LfBpmn/>
+    <LfBpmn
+        :custom-components="customComponents"/>
   </div>
 </template>
 
 <script>
+import SendTask from './customComponents/SendTask'
 
 export default {
   name: 'App',
-  components: {}
+  components: {},
+  data() {
+    return {
+      customComponents: [SendTask],
+    }
+  }
 }
 </script>
-
 <style>
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;

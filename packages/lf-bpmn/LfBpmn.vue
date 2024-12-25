@@ -11,7 +11,8 @@
 
         <!-- 节点面板 -->
         <div class="node-panel-main">
-          <node-panel :lf="lf" @set_countPosition="set_countPosition"/>
+          <node-panel :lf="lf" :custom-components-metadata="customComponentsMetadata"
+                      @set_countPosition="set_countPosition"/>
           <div
               class="node-panel-expand"
               @click="changeExpandedNodePanel"
@@ -64,9 +65,9 @@ import EndEvent from './components/bpmn/events/EndEvent'
 import ExclusiveGateway from './components/bpmn/gateways/ExclusiveGateway'
 import ParallelGateway from './components/bpmn/gateways/ParallelGateway'
 import TimerIntermediateCatchEvent from './components/bpmn/events/TimerIntermediateCatchEvent'
-import ServiceTask from './components/bpmn/tasks/ServiceTask'
 import UserTask from './components/bpmn/tasks/UserTask'
-import scriptTask from './components/bpmn/tasks/scriptTask'
+import ServiceTask from './components/bpmn/tasks/ServiceTask'
+import ScriptTask from './components/bpmn/tasks/ScriptTask'
 
 // 组件
 // import EditProperties from './components/editProperties'
@@ -80,7 +81,11 @@ export default {
   },
   props: {
     showQuery: Boolean,
-    apiInfoForm: Object
+    apiInfoForm: Object,
+    customComponents: {
+      type: Array,
+      default: () => []
+    },
   },
   provide() {
     return {
@@ -90,6 +95,17 @@ export default {
       provideApiInputParams: () => this.inputParams,
       provideApiId: () => this.apiId,
       provideModelId: () => this.modelId
+    }
+  },
+  computed: {
+    customComponentsMetadata() {
+      return this.customComponents.map(item => {
+        return {
+          name: item.name,
+          icon: item.icon,
+          type: item.type,
+        }
+      })
     }
   },
   data() {
@@ -111,11 +127,8 @@ export default {
   created() {
 
     this.$nextTick(() => {
-      this.init()
+      this.initLf()
     })
-
-    console.log('附加信息查询完毕，开始渲染画布')
-    this.initLf()
 
   },
   mounted() {
@@ -136,7 +149,7 @@ export default {
       })
     },
     // 初始化
-    init() {
+    initLf() {
       LogicFlow.use(Menu) // 注册菜单插件
       LogicFlow.use(BpmnElement) // 注册BPMN元素
       LogicFlow.use(BpmnAdapter) // 注册BPMN适配器
@@ -174,7 +187,8 @@ export default {
       this.lf.register(TimerIntermediateCatchEvent) // 注册定时中间捕获事件
       this.lf.register(UserTask) // 注册用户任务
       this.lf.register(ServiceTask) // 注册服务任务
-      this.lf.register(scriptTask) // 注册脚本任务
+      this.lf.register(ScriptTask) // 注册脚本任务
+      this.lf.batchRegister(this.customComponents) // 注册自定义节点
 
       // 初始化渲染
       this.lf.render(this.clickedTreeItem.flow_context)
@@ -277,9 +291,6 @@ export default {
           (distance_y[0] - node[node.length - 1].y) / 2 -
           (node[node.length - 1].y - distance_y[distance_y.length - 1]) / 2
       transformModel.focusOn(targetX, targetY, width, height)
-    },
-    initLf() {
-
     },
     // 更改当前画布的展示的状态
     updateConfig(boolean) {

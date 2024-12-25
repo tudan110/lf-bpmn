@@ -30,6 +30,23 @@ module.exports = {
             })
             .end()
 
+        // set svg-sprite-loader
+        /*config.module
+            .rule('svg')
+            .exclude.add(resolve('src/assets/icons'))
+            .end()
+        config.module
+            .rule('icons')
+            .test(/\.svg$/)
+            .include.add(resolve('src/assets/icons'))
+            .end()
+            .use('svg-sprite-loader')
+            .loader('svg-sprite-loader')
+            .options({
+                symbolId: 'icon-[name]'
+            })
+            .end()*/
+
         // 扩展 webpack 配置，使 packages 加入编译
         config.module
             .rule('js')
