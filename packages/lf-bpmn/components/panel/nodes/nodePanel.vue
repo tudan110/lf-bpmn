@@ -83,7 +83,6 @@
 <script type="text/ecmascript-6">
 import LogicFlow from '@logicflow/core' // 引入LogicFlow核心库
 import extend from '../../../utils/extend'
-// API
 import {bpmnNodeType} from '../../constants/bpmn-constant'
 
 export default {

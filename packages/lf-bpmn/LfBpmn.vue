@@ -1,52 +1,56 @@
 <template>
   <div class="life-cycle" ref="life-cycle">
 
-    <div>
-      <el-button
-          size="small"
-          plain
-          type="primary"
-          @click="save()"
-          icon="el-icon-check"
-      >保存
-      </el-button>
-    </div>
-
     <div class="life-cycle-items">
 
       <!-- 画布 -->
-      <div class="container" ref="container">
-      </div>
+      <div class="container" ref="container"/>
 
       <div class="main">
 
         <!-- 节点面板 -->
-        <div class="node-panel-main">
-          <node-panel :lf="lf"
-                      :custom-components-metadata="customComponentsMetadata"
-                      v-bind="$attrs"
-                      @set_countPosition="set_countPosition"/>
-          <div
-              class="node-panel-expand"
-              @click="changeExpandedNodePanel"
+        <div class="main-node-panel">
+          <node-panel
+              :lf="lf"
+              :custom-components-metadata="customComponentsMetadata"
+              v-bind="$attrs"
+          />
+          <div class="node-panel-expand"
+               @click="toggleExpand"
           >
-            <i v-if="expandedNodePanel" class="el-icon-d-arrow-left" title="收起"/>
+            <i v-if="nodePanelExpanded" class="el-icon-d-arrow-left" title="收起"/>
             <i v-else class="el-icon-d-arrow-right" title="展开"/>
           </div>
         </div>
 
-        <div class="right">
+        <div class="main-right">
+
+          <div class="rightTop" v-if="showToolbar">
+            <div class="toolbar">
+              <el-button
+                  size="small"
+                  plain
+                  type="primary"
+                  icon="el-icon-aim"
+                  circle
+                  @click="setPosition()"
+              />
+              <el-button
+                  size="small"
+                  plain
+                  type="primary"
+                  icon="el-icon-check"
+                  circle
+                  @click="save()"
+              />
+            </div>
+          </div>
+
           <div class="rightRight">
             <!--<edit-properties
                 ref="editProperties"
-                :show-query="showQuery"
                 :lf="lf"
-                :clickedTreeItem="clickedTreeItem"
-                :clickedElement="clickedElement"
                 :elementType="elementType"
-                :api-info-form="apiInfoForm"
-                @set_formInput="set_formInput"
-                @set_countPosition="set_countPosition"
             />-->
           </div>
         </div>
@@ -93,22 +97,14 @@ export default {
     NodePanel,
   },
   props: {
-    showQuery: Boolean,
-    apiInfoForm: Object,
+    showToolbar: {
+      type: Boolean,
+      default: true
+    },
     customComponents: {
       type: Array,
       default: () => []
     },
-  },
-  provide() {
-    return {
-      provideApiQuerySchema: () => this.apiInfoForm.queryParamsSchema,
-      provideApiBodySchema: () => this.apiInfoForm.inputParamsSchema,
-      provideApiQueryParams: () => this.queryParams,
-      provideApiInputParams: () => this.inputParams,
-      provideApiId: () => this.apiId,
-      provideModelId: () => this.modelId
-    }
   },
   computed: {
     customComponentsMetadata() {
@@ -123,16 +119,11 @@ export default {
   },
   data() {
     return {
-      queryParams: [], // query 入参
-      inputParams: [], // body 入参
-      apiId: null,
-      modelId: null,
-      expandedNodePanel: true,
+      nodePanelExpanded: true,
       lf: null,
       isSilentMode: false, // 是否静默模式静默默认表示节点不能被拖动
       stopMoveGraph: false, //禁止移动画布
       stopScrollGraph: false, //禁止滚动移动画布
-      clickedTreeItem: {},
       elementType: 'base',
       clickedElement: {},
     }
@@ -148,18 +139,14 @@ export default {
   },
   watch: {},
   methods: {
-    changeExpandedNodePanel() {
-      this.expandedNodePanel = !this.expandedNodePanel
-      if (this.expandedNodePanel) {
-        document.querySelector('.node-panel-main').style.width = '300px'
+    toggleExpand() {
+      this.nodePanelExpanded = !this.nodePanelExpanded
+      const nodePanel = document.querySelector('.main-node-panel')
+      if (this.nodePanelExpanded) {
+        nodePanel.style.width = '300px'
       } else {
-        document.querySelector('.node-panel-main').style.width = '0'
+        nodePanel.style.width = '0'
       }
-    },
-    set_countPosition() {
-      this.$nextTick(() => {
-        this.countPosition()
-      })
     },
     // 初始化
     initLf() {
@@ -199,7 +186,7 @@ export default {
       this.lf.batchRegister(this.customComponents) // 批量注册自定义节点
 
       // 初始化渲染
-      this.lf.render(this.clickedTreeItem.flow_context)
+      // this.lf.render(bpmnXml)
       this.lf.renderRawData({
         'nodes': [
           {
@@ -323,7 +310,6 @@ export default {
           }
         ]
       })
-      // console.log('this.clickedTreeItem.flow_context', this.clickedTreeItem.flow_context)
 
       this.lf.on('node:dnd-add', (node) => {
         console.log('node:dnd-drag', node)
@@ -375,19 +361,24 @@ export default {
       })
 
     },
+    setPosition() {
+      this.$nextTick(() => {
+        this.countPosition()
+      })
+    },
     countPosition() {
       // 计算当前节点的左上角通过计算流程的高度和宽度，通过transformModel.focusOn的方法将数据移动到中心位置
       let {transformModel, width, height} = this.lf.graphModel
       width = this.$refs.container.offsetWidth || this.$refs['life-cycle'].parentNode.parentNode.offsetWidth - 50
       height = this.$refs.container.offsetHeight || this.$refs['life-cycle'].parentNode.parentNode.offsetHeight - 50
-      let {nodes: nodedata} = this.lf.getGraphRawData()
+      let {nodes: nodeData} = this.lf.getGraphRawData()
 
       let distance_x = []
       let distance_y = []
       let targetX = 0
       let targetY = 0
 
-      let node = extend.deepClone(nodedata).map((item) => {
+      let node = extend.deepClone(nodeData).map((item) => {
         let x = parseFloat(item.x)
         let y = parseFloat(item.y)
 
@@ -440,9 +431,9 @@ export default {
         this.$modal.msgWarning('画布无内容')
       } else {
 
-        let serviceTaskid = []
-        let serviceTaskidnew = []
-        let serviceTaskidlist = []
+        let serviceTaskId = []
+        let serviceTaskIdNew = []
+        let serviceTaskIdList = []
 
         let adapter = adapterOut(rawData)
         console.log('adapter----------------------------------->', adapter)
@@ -559,77 +550,56 @@ export default {
               )
         }
 
-        let serviceTasknode =
+        let serviceTaskNode =
             adapter['bpmn:definitions']['bpmn:process']['bpmn:serviceTask']
-        if (serviceTasknode) {
+        if (serviceTaskNode) {
           if (
-              Object.prototype.toString.call(serviceTasknode) === '[object Object]'
+              Object.prototype.toString.call(serviceTaskNode) === '[object Object]'
           ) {
-            serviceTaskidlist.push(serviceTasknode)
+            serviceTaskIdList.push(serviceTaskNode)
           } else {
-            serviceTaskidlist = serviceTasknode
+            serviceTaskIdList = serviceTaskNode
           }
 
           // 服务节是否循环 关闭循环的时候将 自定义节点的 multiInstanceLoopCharacteristics 删除
-          for (let i = 0; i < serviceTaskidlist.length; i++) {
-            let multiInstanceLoopCharacteristics = serviceTaskidlist[i]['bpmn:multiInstanceLoopCharacteristics']
+          for (let i = 0; i < serviceTaskIdList.length; i++) {
+            let multiInstanceLoopCharacteristics = serviceTaskIdList[i]['bpmn:multiInstanceLoopCharacteristics']
                 ? JSON.parse(
                     JSON.stringify(
-                        serviceTaskidlist[i]['bpmn:multiInstanceLoopCharacteristics']
+                        serviceTaskIdList[i]['bpmn:multiInstanceLoopCharacteristics']
                     )
                 ) : ''
-            delete serviceTaskidlist[i]['bpmn:multiInstanceLoopCharacteristics']
+            delete serviceTaskIdList[i]['bpmn:multiInstanceLoopCharacteristics']
             if (
                 multiInstanceLoopCharacteristics &&
                 Object.keys(multiInstanceLoopCharacteristics).length > 0
             ) {
-              serviceTaskidlist[i]['bpmn:multiInstanceLoopCharacteristics'] =
+              serviceTaskIdList[i]['bpmn:multiInstanceLoopCharacteristics'] =
                   multiInstanceLoopCharacteristics
             }
 
-            // 不将新增的字段参数添加上
-            if (serviceTaskidlist[i]['-dirflowsid']) {
-              serviceTaskid.push(serviceTaskidlist[i]['-id'])
-              serviceTaskidnew.push(
-                  serviceTaskidlist[i]['-id']
-              )
-              delete serviceTaskidlist[i]['-dirflowsid']
-            }
           }
-        }
-        adapter['bpmn:definitions']['-xmlns:camunda'] =
-            'http://camunda.org/schema/1.0/bpmn'
-        adapter['bpmn:definitions']['-id'] =
-            'd' + adapter['bpmn:definitions']['-id'].slice(1)
-        adapter['bpmn:definitions']['bpmn:process']['-isExecutable'] = 'true'
-        this.clickedTreeItem.flowContext =
-            '<?xml version="1.0" encoding="UTF-8"?>' + Json2Xml(adapter)
-        console.log('this.clickedTreeItem.id', this.clickedTreeItem)
-        let obj = {}
-        obj.flowContext = this.clickedTreeItem.flowContext //xml文件
-        obj.formInput = this.clickedTreeItem.form_input //入参
-        console.log('obj.formInput', obj.formInput)
-        obj.flow_name = this.clickedTreeItem.flow_name // 流程名称
-        obj.flow_describe = this.clickedTreeItem.flow_detail // 流程描述
-        // 流程的同步异步，由api定义
 
-        console.log(
-            'this.clickedTreeItem.flowContext---------------------',
-            serviceTaskid,
-            serviceTaskidnew,
-            serviceTaskidlist
-        )
+        }
+        adapter['bpmn:definitions']['-xmlns:camunda'] = 'http://camunda.org/schema/1.0/bpmn'
+        adapter['bpmn:definitions']['-id'] = 'd' + adapter['bpmn:definitions']['-id'].slice(1)
+        adapter['bpmn:definitions']['bpmn:process']['-isExecutable'] = 'true'
+
+        //xml文件
+        let bpmnXml = '<?xml version="1.0" encoding="UTF-8"?>' + Json2Xml(adapter)
+        console.log('bpmnXml---------------------', serviceTaskId, serviceTaskIdNew, serviceTaskIdList)
+
         // 服务节点id的拼接
-        if (serviceTaskidnew && serviceTaskidnew.length > 0) {
-          for (let i = 0; i < serviceTaskidnew.length; i++) {
-            obj.flowContext = obj.flowContext.replaceAll(
-                serviceTaskid[i],
-                serviceTaskidnew[i]
+        if (serviceTaskIdNew && serviceTaskIdNew.length > 0) {
+          for (let i = 0; i < serviceTaskIdNew.length; i++) {
+            bpmnXml = bpmnXml.replaceAll(
+                serviceTaskId[i],
+                serviceTaskIdNew[i]
             )
           }
         }
 
-        console.log('obj', obj)
+        console.log('bpmnXml', bpmnXml)
 
       }
     },
@@ -695,46 +665,54 @@ export default {
       border: 1px solid #1c84c6;
       box-sizing: border-box;
 
-      .node-panel-main {
+      .main-node-panel {
         position: relative;
         right: 2px;
         width: 300px;
         background: #ffffff;
         box-shadow: 2px 2px 4px 0 rgba(198, 198, 198, 0.5);
         z-index: 300;
+
+        .node-panel-expand {
+          cursor: pointer;
+          width: 16px;
+          height: 32px;
+          position: absolute;
+          right: -16px;
+          top: 50%;
+          margin-top: -16px;
+          z-index: 300;
+          color: #FFFFFF;
+          background: #1890ff;
+          box-shadow: 2px 2px 4px 0 rgba(198, 198, 198, 0.5);
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
+
       }
 
-      .node-panel-expand {
-        cursor: pointer;
-        width: 16px;
-        height: 32px;
-        position: absolute;
-        right: -16px;
-        top: 50%;
-        margin-top: -16px;
-        z-index: 300;
-        color: #FFFFFF;
-        background: #1890ff;
-        box-shadow: 2px 2px 4px 0 rgba(198, 198, 198, 0.5);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-
-      }
-
-      .right {
+      .main-right {
         flex: 1;
         position: relative;
-        //left: 2px;
 
         .rightTop {
           position: absolute;
-          width: 100%;
           top: 0;
-          //height: 150px;
+          left: 2px;
+          width: calc(100% - 300px);
           background: #ffffff;
+          border: 1px solid rgba(198, 198, 198, 0.5);
+          box-sizing: border-box;
           box-shadow: -2px 2px 4px 0px rgba(198, 198, 198, 0.5);
           z-index: 300;
+
+          .toolbar {
+            margin: 4px 10px;
+            display: flex;
+            justify-content: flex-start;
+          }
+
         }
 
         .rightBottom {
