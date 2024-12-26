@@ -34,7 +34,7 @@ class ServiceTaskModel extends RectNodeModel {
         const style = super.getTextStyle()
         style.fontSize = 14
         style.color = '#606266'
-        style.dy = 44
+        style.dy = 54
         return style
     }
 
