@@ -105,6 +105,15 @@ export default {
       type: Array,
       default: () => []
     },
+    graphRawData: {
+      type: Object,
+      default: () => {
+      }
+    },
+    bpmnXml: {
+      type: String,
+      default: ''
+    }
   },
   computed: {
     customComponentsMetadata() {
@@ -186,130 +195,8 @@ export default {
       this.lf.batchRegister(this.customComponents) // 批量注册自定义节点
 
       // 初始化渲染
-      // this.lf.render(bpmnXml)
-      this.lf.renderRawData({
-        'nodes': [
-          {
-            'id': 'startEvent_5b4f3e4c784e42b5bcf61ebb576ea85e',
-            'type': 'bpmn:startEvent',
-            'x': 640,
-            'y': 186,
-            'properties': {
-              'bpmn:extensionElements': {
-                'camunda:executionListener': {
-                  '-delegateExpression': '${StartEvent}',
-                  '-event': 'start'
-                }
-              },
-              'width': 40,
-              'height': 40
-            },
-            'text': {
-              'x': 640,
-              'y': 186,
-              'value': '开始事件'
-            }
-          },
-          {
-            'id': 'serviceTask_526928bcb6da4c1ebb811ef78f466e49',
-            'type': 'bpmn:serviceTask',
-            'x': 640,
-            'y': 383,
-            'properties': {
-              'bpmn:extensionElements': {
-                'camunda:executionListener': {
-                  '-delegateExpression': '${StartEvent}',
-                  '-event': 'start'
-                }
-              },
-              'width': 120,
-              'height': 80
-            },
-            'text': {
-              'x': 640,
-              'y': 383,
-              'value': '服务任务'
-            }
-          },
-          {
-            'id': 'endEvent_a9e6e0f474c94b2f8700fd5c83b8fc2f',
-            'type': 'bpmn:endEvent',
-            'x': 640,
-            'y': 578,
-            'properties': {
-              'bpmn:extensionElements': {
-                'camunda:executionListener': {
-                  '-delegateExpression': '${EndEvent}',
-                  '-event': 'end'
-                }
-              },
-              'width': 40,
-              'height': 40
-            },
-            'text': {
-              'x': 640,
-              'y': 578,
-              'value': '结束事件'
-            }
-          }
-        ],
-        'edges': [
-          {
-            'id': 'Flow_92a6de9',
-            'type': 'bpmn:sequenceFlow',
-            'properties': {},
-            'sourceNodeId': 'startEvent_5b4f3e4c784e42b5bcf61ebb576ea85e',
-            'targetNodeId': 'serviceTask_526928bcb6da4c1ebb811ef78f466e49',
-            'sourceAnchorId': 'startEvent_5b4f3e4c784e42b5bcf61ebb576ea85e_2',
-            'targetAnchorId': 'serviceTask_526928bcb6da4c1ebb811ef78f466e49_0',
-            'startPoint': {
-              'x': 640,
-              'y': 206
-            },
-            'endPoint': {
-              'x': 640,
-              'y': 343
-            },
-            'pointsList': [
-              {
-                'x': 640,
-                'y': 206
-              },
-              {
-                'x': 640,
-                'y': 343
-              }
-            ]
-          },
-          {
-            'id': 'Flow_eb5ac16',
-            'type': 'bpmn:sequenceFlow',
-            'properties': {},
-            'sourceNodeId': 'serviceTask_526928bcb6da4c1ebb811ef78f466e49',
-            'targetNodeId': 'endEvent_a9e6e0f474c94b2f8700fd5c83b8fc2f',
-            'sourceAnchorId': 'serviceTask_526928bcb6da4c1ebb811ef78f466e49_2',
-            'targetAnchorId': 'endEvent_a9e6e0f474c94b2f8700fd5c83b8fc2f_0',
-            'startPoint': {
-              'x': 640,
-              'y': 423
-            },
-            'endPoint': {
-              'x': 640,
-              'y': 558
-            },
-            'pointsList': [
-              {
-                'x': 640,
-                'y': 423
-              },
-              {
-                'x': 640,
-                'y': 558
-              }
-            ]
-          }
-        ]
-      })
+      // this.lf.render(this.bpmnXml)
+      this.lf.renderRawData(this.graphRawData)
 
       this.lf.on('node:dnd-add', (node) => {
         console.log('node:dnd-drag', node)
@@ -424,184 +311,191 @@ export default {
     // 保存
     save() {
 
-      let rawData = this.lf.getGraphRawData()
-      if (!rawData.nodes.length
-          && !rawData.edges.length) {
-        // console.log("画布无内容")
+      let rawData = this.getGraphRawData()
+      if (!rawData?.nodes?.length && !rawData?.edges?.length) {
         this.$modal.msgWarning('画布无内容')
       } else {
-
-        let serviceTaskId = []
-        let serviceTaskIdNew = []
-        let serviceTaskIdList = []
-
-        let adapter = adapterOut(rawData)
-        console.log('adapter----------------------------------->', adapter)
-        let {
-          ['bpmn:definitions']: {
-            ['bpmn:process']: {
-              ['bpmn:endEvent']: endEvent,
-              ['bpmn:subProcess']: subProcess,
-              ['bpmn:userTask']: userTask,
-              ['bpmn:intermediateCatchEvent']: intermediateCatchEvent,
-              ['bpmn:scriptTask']: scriptTask
-            }
-          }
-        } = adapter
-        if (Object.prototype.toString.call(endEvent) === '[object Object]') {
-          endEvent = [endEvent]
-        }
-        if (Object.prototype.toString.call(subProcess) === '[object Object]') {
-          subProcess = [subProcess]
-        }
-
-        if (Object.prototype.toString.call(intermediateCatchEvent) === '[object Object]') {
-          intermediateCatchEvent = [intermediateCatchEvent]
-        } else if (Object.prototype.toString.call(intermediateCatchEvent) === '[object Undefined]') {
-          intermediateCatchEvent = []
-        }
-
-        if (Object.prototype.toString.call(scriptTask) === '[object Object]') {
-          scriptTask = [scriptTask]
-        } else if (
-            Object.prototype.toString.call(scriptTask) === '[object Undefined]'
-        ) {
-          scriptTask = []
-        }
-
-        for (let i = 0; i < scriptTask.length; i++) {
-          let scriptTask_text = ''
-          Object.keys(scriptTask[i]).forEach((item) => {
-            if (item.indexOf('bpmn:script') > -1) {
-              if (
-                  Object.prototype.toString.call(scriptTask[i][item]) === '[object Object]'
-              ) {
-                Object.keys(scriptTask[i][item]).forEach((it) => {
-                  if (it.indexOf('#text') > -1) {
-                    scriptTask_text = scriptTask[i][item][it]
-                  }
-                })
-              } else {
-                scriptTask_text = scriptTask[i][item].trimEnd()
-              }
-            }
-          })
-
-          if (scriptTask_text) {
-            delete scriptTask[i]['-bpmn:script']
-            scriptTask[i]['bpmn:script'] = {
-              ['-#cdata']: scriptTask_text,
-            }
-          }
-        }
-
-        for (let i = 0; i < intermediateCatchEvent && intermediateCatchEvent.length; i++) {
-          let extensionElements = intermediateCatchEvent[i]
-          extensionElements['bpmn:extensionElements']['camunda:inputParameter'] = {
-            ['camunda:inputOutput']: {
-              '-#text': '',
-            },
-          }
-        }
-
-        // 解决默认情况下解决结束事件默认为空的情况下xml缺失的问题。
-        for (let i = 0; i < endEvent && endEvent.length; i++) {
-          let incoming = endEvent[i]['bpmn:incoming']
-          if (
-              !endEvent[i]['bpmn:extensionElements'] ||
-              Object.keys(endEvent[i]['bpmn:extensionElements']).length === 0
-          ) {
-            endEvent[i]['bpmn:extensionElements'] = {
-              ['camunda:inputOutput']: {
-                ['-#text']: ''
-              }
-            }
-            delete endEvent[i]['bpmn:incoming']
-            endEvent[i]['bpmn:incoming'] = incoming
-          }
-        }
-        //  解决用户节点多空格问题,先判空
-
-        if (userTask) {
-          if (Object.prototype.toString.call(userTask) === '[object Object]') {
-            userTask = [userTask]
-          }
-          for (let i = 0; i < userTask.length; i++) {
-            if (userTask[i]['bpmn:extensionElements']) {
-              if (
-                  Object.prototype.toString.call(
-                      Object.keys(userTask[i]['bpmn:extensionElements'])[0]
-                  ) !== '[object Object]'
-              ) {
-                userTask[i]['bpmn:extensionElements'] = {
-                  ['camunda:inputOutput']: {['-#text']: ''}
-                }
-              }
-            }
-          }
-        }
-
-        if (adapter['bpmn:definitions']['bpmn:process']['bpmn:serviceTask']) {
-          adapter['bpmn:definitions']['bpmn:process']['bpmn:serviceTask'] =
-              JSON.parse(
-                  JSON.stringify(
-                      adapter['bpmn:definitions']['bpmn:process']['bpmn:serviceTask']
-                  ).replaceAll('\\t\\n', '')
-              )
-        }
-
-        let serviceTaskNode =
-            adapter['bpmn:definitions']['bpmn:process']['bpmn:serviceTask']
-        if (serviceTaskNode) {
-          if (
-              Object.prototype.toString.call(serviceTaskNode) === '[object Object]'
-          ) {
-            serviceTaskIdList.push(serviceTaskNode)
-          } else {
-            serviceTaskIdList = serviceTaskNode
-          }
-
-          // 服务节是否循环 关闭循环的时候将 自定义节点的 multiInstanceLoopCharacteristics 删除
-          for (let i = 0; i < serviceTaskIdList.length; i++) {
-            let multiInstanceLoopCharacteristics = serviceTaskIdList[i]['bpmn:multiInstanceLoopCharacteristics']
-                ? JSON.parse(
-                    JSON.stringify(
-                        serviceTaskIdList[i]['bpmn:multiInstanceLoopCharacteristics']
-                    )
-                ) : ''
-            delete serviceTaskIdList[i]['bpmn:multiInstanceLoopCharacteristics']
-            if (
-                multiInstanceLoopCharacteristics &&
-                Object.keys(multiInstanceLoopCharacteristics).length > 0
-            ) {
-              serviceTaskIdList[i]['bpmn:multiInstanceLoopCharacteristics'] =
-                  multiInstanceLoopCharacteristics
-            }
-
-          }
-
-        }
-        adapter['bpmn:definitions']['-xmlns:camunda'] = 'http://camunda.org/schema/1.0/bpmn'
-        adapter['bpmn:definitions']['-id'] = 'd' + adapter['bpmn:definitions']['-id'].slice(1)
-        adapter['bpmn:definitions']['bpmn:process']['-isExecutable'] = 'true'
-
-        //xml文件
-        let bpmnXml = '<?xml version="1.0" encoding="UTF-8"?>' + Json2Xml(adapter)
-        console.log('bpmnXml---------------------', serviceTaskId, serviceTaskIdNew, serviceTaskIdList)
-
-        // 服务节点id的拼接
-        if (serviceTaskIdNew && serviceTaskIdNew.length > 0) {
-          for (let i = 0; i < serviceTaskIdNew.length; i++) {
-            bpmnXml = bpmnXml.replaceAll(
-                serviceTaskId[i],
-                serviceTaskIdNew[i]
-            )
-          }
-        }
-
+        let bpmnXml = this.getBpmnXml()
         console.log('bpmnXml', bpmnXml)
+      }
+    },
+    getGraphRawData() {
+      return this.lf.getGraphRawData()
+    },
+    getBpmnXml() {
+
+      let rawData = this.getGraphRawData()
+
+      let serviceTaskId = []
+      let serviceTaskIdNew = []
+      let serviceTaskIdList = []
+
+      let adapter = adapterOut(rawData)
+      console.log('adapter----------------------------------->', adapter)
+      let {
+        ['bpmn:definitions']: {
+          ['bpmn:process']: {
+            ['bpmn:endEvent']: endEvent,
+            ['bpmn:subProcess']: subProcess,
+            ['bpmn:userTask']: userTask,
+            ['bpmn:intermediateCatchEvent']: intermediateCatchEvent,
+            ['bpmn:scriptTask']: scriptTask
+          }
+        }
+      } = adapter
+      if (Object.prototype.toString.call(endEvent) === '[object Object]') {
+        endEvent = [endEvent]
+      }
+      if (Object.prototype.toString.call(subProcess) === '[object Object]') {
+        subProcess = [subProcess]
+      }
+
+      if (Object.prototype.toString.call(intermediateCatchEvent) === '[object Object]') {
+        intermediateCatchEvent = [intermediateCatchEvent]
+      } else if (Object.prototype.toString.call(intermediateCatchEvent) === '[object Undefined]') {
+        intermediateCatchEvent = []
+      }
+
+      if (Object.prototype.toString.call(scriptTask) === '[object Object]') {
+        scriptTask = [scriptTask]
+      } else if (
+          Object.prototype.toString.call(scriptTask) === '[object Undefined]'
+      ) {
+        scriptTask = []
+      }
+
+      for (let i = 0; i < scriptTask.length; i++) {
+        let scriptTask_text = ''
+        Object.keys(scriptTask[i]).forEach((item) => {
+          if (item.indexOf('bpmn:script') > -1) {
+            if (
+                Object.prototype.toString.call(scriptTask[i][item]) === '[object Object]'
+            ) {
+              Object.keys(scriptTask[i][item]).forEach((it) => {
+                if (it.indexOf('#text') > -1) {
+                  scriptTask_text = scriptTask[i][item][it]
+                }
+              })
+            } else {
+              scriptTask_text = scriptTask[i][item].trimEnd()
+            }
+          }
+        })
+
+        if (scriptTask_text) {
+          delete scriptTask[i]['-bpmn:script']
+          scriptTask[i]['bpmn:script'] = {
+            ['-#cdata']: scriptTask_text,
+          }
+        }
+      }
+
+      for (let i = 0; i < intermediateCatchEvent && intermediateCatchEvent.length; i++) {
+        let extensionElements = intermediateCatchEvent[i]
+        extensionElements['bpmn:extensionElements']['camunda:inputParameter'] = {
+          ['camunda:inputOutput']: {
+            '-#text': '',
+          },
+        }
+      }
+
+      // 解决默认情况下解决结束事件默认为空的情况下xml缺失的问题。
+      for (let i = 0; i < endEvent && endEvent.length; i++) {
+        let incoming = endEvent[i]['bpmn:incoming']
+        if (
+            !endEvent[i]['bpmn:extensionElements'] ||
+            Object.keys(endEvent[i]['bpmn:extensionElements']).length === 0
+        ) {
+          endEvent[i]['bpmn:extensionElements'] = {
+            ['camunda:inputOutput']: {
+              ['-#text']: ''
+            }
+          }
+          delete endEvent[i]['bpmn:incoming']
+          endEvent[i]['bpmn:incoming'] = incoming
+        }
+      }
+      //  解决用户节点多空格问题,先判空
+
+      if (userTask) {
+        if (Object.prototype.toString.call(userTask) === '[object Object]') {
+          userTask = [userTask]
+        }
+        for (let i = 0; i < userTask.length; i++) {
+          if (userTask[i]['bpmn:extensionElements']) {
+            if (
+                Object.prototype.toString.call(
+                    Object.keys(userTask[i]['bpmn:extensionElements'])[0]
+                ) !== '[object Object]'
+            ) {
+              userTask[i]['bpmn:extensionElements'] = {
+                ['camunda:inputOutput']: {['-#text']: ''}
+              }
+            }
+          }
+        }
+      }
+
+      if (adapter['bpmn:definitions']['bpmn:process']['bpmn:serviceTask']) {
+        adapter['bpmn:definitions']['bpmn:process']['bpmn:serviceTask'] =
+            JSON.parse(
+                JSON.stringify(
+                    adapter['bpmn:definitions']['bpmn:process']['bpmn:serviceTask']
+                ).replaceAll('\\t\\n', '')
+            )
+      }
+
+      let serviceTaskNode =
+          adapter['bpmn:definitions']['bpmn:process']['bpmn:serviceTask']
+      if (serviceTaskNode) {
+        if (
+            Object.prototype.toString.call(serviceTaskNode) === '[object Object]'
+        ) {
+          serviceTaskIdList.push(serviceTaskNode)
+        } else {
+          serviceTaskIdList = serviceTaskNode
+        }
+
+        // 服务节是否循环 关闭循环的时候将 自定义节点的 multiInstanceLoopCharacteristics 删除
+        for (let i = 0; i < serviceTaskIdList.length; i++) {
+          let multiInstanceLoopCharacteristics = serviceTaskIdList[i]['bpmn:multiInstanceLoopCharacteristics']
+              ? JSON.parse(
+                  JSON.stringify(
+                      serviceTaskIdList[i]['bpmn:multiInstanceLoopCharacteristics']
+                  )
+              ) : ''
+          delete serviceTaskIdList[i]['bpmn:multiInstanceLoopCharacteristics']
+          if (
+              multiInstanceLoopCharacteristics &&
+              Object.keys(multiInstanceLoopCharacteristics).length > 0
+          ) {
+            serviceTaskIdList[i]['bpmn:multiInstanceLoopCharacteristics'] =
+                multiInstanceLoopCharacteristics
+          }
+
+        }
 
       }
+      adapter['bpmn:definitions']['-xmlns:camunda'] = 'http://camunda.org/schema/1.0/bpmn'
+      adapter['bpmn:definitions']['-id'] = 'd' + adapter['bpmn:definitions']['-id'].slice(1)
+      adapter['bpmn:definitions']['bpmn:process']['-isExecutable'] = 'true'
+
+      //xml文件
+      let bpmnXml = '<?xml version="1.0" encoding="UTF-8"?>' + Json2Xml(adapter)
+      console.log('bpmnXml---------------------', serviceTaskId, serviceTaskIdNew, serviceTaskIdList)
+
+      // 服务节点id的拼接
+      if (serviceTaskIdNew && serviceTaskIdNew.length > 0) {
+        for (let i = 0; i < serviceTaskIdNew.length; i++) {
+          bpmnXml = bpmnXml.replaceAll(
+              serviceTaskId[i],
+              serviceTaskIdNew[i]
+          )
+        }
+      }
+
+      return bpmnXml
+
     },
   }
 }
