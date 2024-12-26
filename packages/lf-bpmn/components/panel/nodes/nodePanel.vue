@@ -1,49 +1,77 @@
 <template>
   <div class="node-panel">
 
-    <div class="fold_div">
+    <div class="fold-node-panel">
 
       <!-- 基础组件 -->
-      <div class="tree-title">
-        <div @click="showBaseComponents = !showBaseComponents">
-          <svg-icon
-              icon-class="arrow-down"
-              class="btn"
-              v-if="showBaseComponents"/>
-          <svg-icon icon-class="arrow-right" class="btn" v-else/>
-          <span>基础组件</span>
+      <div v-if="showBaseComponents">
+        <div class="component-box-title">
+          <div @click="showBase = !showBase">
+            <svg-icon
+                icon-class="arrow-down"
+                class="btn"
+                v-if="showBase"/>
+            <svg-icon icon-class="arrow-right" class="btn" v-else/>
+            <span>基础组件</span>
+          </div>
+        </div>
+        <div class="component-box" v-if="showBase">
+          <div
+              class="component-item"
+              v-for="(item, index) in baseComponents"
+              :key="index"
+              @mousedown="$_dragNode(item)">
+            <svg-icon :icon-class="item.icon" class="component-icon"/>
+            <span>{{ item.name }}</span>
+          </div>
         </div>
       </div>
-      <div class="component-box" v-if="showBaseComponents">
-        <div
-            class="component-item"
-            v-for="(item, index) in baseComponents"
-            :key="index"
-            @mousedown="$_dragNode(item)">
-          <svg-icon :icon-class="item.icon" class="component-icon"/>
-          <span>{{ item.name }}</span>
+
+      <!-- 任务组件 -->
+      <div v-if="showTaskComponents">
+        <div class="component-box-title">
+          <div @click="showTask = !showTask">
+            <svg-icon
+                icon-class="arrow-down"
+                class="btn"
+                v-if="showTask"/>
+            <svg-icon icon-class="arrow-right" class="btn" v-else/>
+            <span>任务组件</span>
+          </div>
+        </div>
+        <div class="component-box" v-if="showTask">
+          <div
+              class="component-item"
+              v-for="(item, index) in taskComponents"
+              :key="index"
+              @mousedown="$_dragNode(item)">
+            <svg-icon :icon-class="item.icon" class="component-icon"/>
+            <span>{{ item.name }}</span>
+          </div>
         </div>
       </div>
 
       <!-- 自定义组件 -->
-      <div class="tree-title">
-        <div @click="showCustomComponents = !showCustomComponents">
-          <svg-icon
-              icon-class="arrow-down"
-              class="btn"
-              v-if="showCustomComponents"/>
-          <svg-icon icon-class="arrow-right" class="btn" v-else/>
-          <span>自定义组件</span>
+      <div v-if="showCustomComponents">
+        <div class="component-box-title">
+          <div @click="showCustom = !showCustom">
+            <svg-icon
+                icon-class="arrow-down"
+                class="btn"
+                v-if="showCustom"/>
+            <svg-icon icon-class="arrow-right" class="btn" v-else/>
+            <span>自定义组件</span>
+          </div>
         </div>
-      </div>
-      <div class="component-box" v-if="showCustomComponents">
-        <div
-            class="component-item"
-            v-for="(item, index) in customComponentsMetadata"
-            :key="index"
-            @mousedown="$_dragNode(item)">
-          <svg-icon :icon-class="item.icon" class="component-icon"/>
-          <span>{{ item.name }}</span>
+        <div class="component-box" v-if="showCustom">
+          <div
+              class="component-item"
+              v-for="(item, index) in customComponentsMetadata"
+              :key="index"
+              @mousedown="$_dragNode(item)">
+            <svg-icon :icon-class="item.icon" class="component-icon"/>
+            <span>{{ item.name }}</span>
+          </div>
         </div>
       </div>
 
@@ -53,6 +81,7 @@
 </template>
 
 <script type="text/ecmascript-6">
+import LogicFlow from '@logicflow/core' // 引入LogicFlow核心库
 import extend from '../../../utils/extend'
 // API
 import {bpmnNodeType} from '../../constants/bpmn-constant'
@@ -60,34 +89,52 @@ import {bpmnNodeType} from '../../constants/bpmn-constant'
 export default {
   components: {},
   props: {
-    lf: Object,
+    lf: LogicFlow,
     customComponentsMetadata: {
       type: Array,
       default: () => []
     },
+    // 是否显示基础组件
+    showBaseComponents: {
+      type: Boolean,
+      default: true
+    },
+    // 是否显示任务组件
+    showTaskComponents: {
+      type: Boolean,
+      default: true
+    },
+    // 是否显示自定义组件
+    showCustomComponents: {
+      type: Boolean,
+      default: true
+    },
+    // 是否显示原子能力库
+    showAtomicPowerComponents: {
+      type: Boolean,
+      default: false
+    }
   },
   data() {
     return {
       loading: false,
-      // 是否显示基础组件
-      showBaseComponents: true,
-      // 基础组件
+      showBase: true,
       baseComponents: [
         {name: '开始事件', icon: 'start-event', type: 'bpmn:startEvent'},
         {name: '结束事件', icon: 'end-event', type: 'bpmn:endEvent'},
         {name: '排他网关', icon: 'exclusive-gateway', type: 'bpmn:exclusiveGateway'},
         {name: '并行网关', icon: 'parallel-gateway', type: 'bpmn:parallelGateway'},
         {name: '定时中间捕获事件', icon: 'timer-intermediate-catch-event', type: 'bpmn:intermediateCatchEvent'},
+      ],
+      showTask: true,
+      taskComponents: [
         {name: '用户任务', icon: 'user-task', type: 'bpmn:userTask'},
         {name: '服务任务', icon: 'service-task', type: 'bpmn:serviceTask'},
         {name: '脚本任务', icon: 'script-task', type: 'bpmn:scriptTask'},
       ],
-      // 是否显示自定义组件
-      showCustomComponents: true,
-      // 是否显示原子能力库
-      showServiceNode: true,
-      // 搜索参数
-      searchParam: '',
+      showCustom: true,
+      showAtomicPower: false,
+      filterAtomicPowerParam: '', // 过滤原子能力参数
     }
   },
   created() {
@@ -259,7 +306,7 @@ export default {
     },
   },
   watch: {
-    searchParam(val) {
+    filterAtomicPowerParam(val) {
       this.$refs.tree.filter(val)
     }
   }
@@ -296,33 +343,19 @@ export default {
   border-radius: 0px;
 }
 
-.node-panel, .node-panelanimal {
+.node-panel {
   height: 100%;
   background-color: #fff;
   overflow-y: auto;
   z-index: 222;
   user-select: none;
 
-  div.fold_div, div.folded_div {
+  .fold-node-panel {
     min-height: calc(100% - 30px);
     min-width: 30px;
   }
 
-  .divcion_tree {
-    display: flex;
-    align-items: center;
-    position: sticky;
-    bottom: 0px;
-    left: 2px;
-    width: 100%;
-    text-align: left;
-    text-indent: 5px;
-    color: white;
-    background: #1890ff;
-    height: 30px;
-  }
-
-  .tree-title {
+  .component-box-title {
     height: 42px;
     line-height: 40px;
     padding: 0 16px;
@@ -335,7 +368,7 @@ export default {
     background-color: #f9f9f9;
   }
 
-  .tree-title:nth-child(1) {
+  .component-box-title:nth-child(1) {
     display: flex;
 
     div:nth-child(1) {

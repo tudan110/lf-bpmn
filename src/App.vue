@@ -2,6 +2,10 @@
   <div id="app">
     <LfBpmn
         :custom-components="customComponents"
+        :show-base-components="true"
+        :show-task-components="true"
+        :show-custom-components="true"
+        :show-atomic-power-components="false"
         @click="onClick"
     />
   </div>
