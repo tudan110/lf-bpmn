@@ -1,6 +1,7 @@
 <template>
   <div id="app">
     <LfBpmn
+        :show-toolbar="true"
         :custom-components="customComponents"
         :show-base-components="true"
         :show-task-components="true"
