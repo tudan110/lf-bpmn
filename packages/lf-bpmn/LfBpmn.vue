@@ -75,9 +75,9 @@ import '@logicflow/extension/lib/style/index.css' // 引入LogicFlow扩展库样
 // 节点
 import StartEvent from './components/bpmn/events/StartEvent'
 import EndEvent from './components/bpmn/events/EndEvent'
+import TimerIntermediateCatchEvent from './components/bpmn/events/TimerIntermediateCatchEvent'
 import ExclusiveGateway from './components/bpmn/gateways/ExclusiveGateway'
 import ParallelGateway from './components/bpmn/gateways/ParallelGateway'
-import TimerIntermediateCatchEvent from './components/bpmn/events/TimerIntermediateCatchEvent'
 import UserTask from './components/bpmn/tasks/UserTask'
 import ServiceTask from './components/bpmn/tasks/ServiceTask'
 import ScriptTask from './components/bpmn/tasks/ScriptTask'
@@ -193,15 +193,10 @@ export default {
        * 2. 重写 draw 方法
        * 3. 注册
        */
-      this.lf.register(StartEvent) // 注册开始事件
-      this.lf.register(EndEvent) // 注册结束事件
-      this.lf.register(ExclusiveGateway) // 注册唯一条件
-      this.lf.register(ParallelGateway) // 注册并行网关
-      this.lf.register(TimerIntermediateCatchEvent) // 注册定时中间捕获事件
-      this.lf.register(UserTask) // 注册用户任务
-      this.lf.register(ServiceTask) // 注册服务任务
-      this.lf.register(ScriptTask) // 注册脚本任务
-      this.lf.batchRegister(this.customComponents) // 注册自定义节点
+      this.lf.batchRegister([StartEvent, EndEvent, TimerIntermediateCatchEvent]) // 批量注册事件
+      this.lf.batchRegister([ExclusiveGateway, ParallelGateway,]) // 批量注册网关
+      this.lf.batchRegister([UserTask, ServiceTask, ScriptTask]) // 批量注册任务
+      this.lf.batchRegister(this.customComponents) // 批量注册自定义节点
 
       // 初始化渲染
       this.lf.render(this.clickedTreeItem.flow_context)

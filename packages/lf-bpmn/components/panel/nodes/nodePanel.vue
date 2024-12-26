@@ -122,9 +122,9 @@ export default {
       baseComponents: [
         {name: '开始事件', icon: 'start-event', type: 'bpmn:startEvent'},
         {name: '结束事件', icon: 'end-event', type: 'bpmn:endEvent'},
+        {name: '定时中间捕获事件', icon: 'timer-intermediate-catch-event', type: 'bpmn:intermediateCatchEvent'},
         {name: '排他网关', icon: 'exclusive-gateway', type: 'bpmn:exclusiveGateway'},
         {name: '并行网关', icon: 'parallel-gateway', type: 'bpmn:parallelGateway'},
-        {name: '定时中间捕获事件', icon: 'timer-intermediate-catch-event', type: 'bpmn:intermediateCatchEvent'},
       ],
       showTask: true,
       taskComponents: [
