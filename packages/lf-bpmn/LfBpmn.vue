@@ -74,6 +74,7 @@ import {adapterOut} from './components/adapter/adapterOut'
 
 // LogicFlow
 import LogicFlow from '@logicflow/core' // 引入LogicFlow核心库
+// import { Control } from "@logicflow/extension";
 import '@logicflow/core/dist/index.css' // 引入LogicFlow样式
 import '@logicflow/extension/lib/style/index.css' // 引入LogicFlow扩展库样式
 import {BpmnAdapter, BpmnElement, BpmnXmlAdapter, Menu} from '@logicflow/extension' // 引入LogicFlow扩展库
@@ -188,6 +189,7 @@ export default {
       LogicFlow.use(BpmnElement) // 注册BPMN元素
       LogicFlow.use(BpmnAdapter) // 注册BPMN适配器
       LogicFlow.use(BpmnXmlAdapter) // 注册BPMN适配器
+      // LogicFlow.use(Control);
       // 初始化LogicFlow
       this.lf = new LogicFlow({
         container: this.$refs.container,
