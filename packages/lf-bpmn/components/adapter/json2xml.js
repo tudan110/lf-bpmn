@@ -93,7 +93,7 @@ function toXml(v, name, ind, deep) {
 
         // 自定义节点标签，适配 bpmn
         let tagName = name
-        if (name === bpmnNodeType.serviceTaskRestful) {
+        if (name.startsWith(bpmnNodeType.serviceTask)) {
             // 自定义节点，在保存之前，节点名转换为 bpmn 支持的
             tagName = bpmnNodeType.serviceTask
         }

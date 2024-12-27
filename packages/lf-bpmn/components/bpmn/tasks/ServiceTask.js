@@ -158,6 +158,8 @@ class ServiceTaskView extends RectNode {
 
 // 导出自定义节点
 export default {
+    name: '服务任务', // 必填：拖拽面板上的组件展示名称
+    icon: 'service-task', // 必填：拖拽面板上的组件图标，和 assets/icons/svgs 文件名保持一致
     type: bpmnNodeType.serviceTask, // 节点类型
     view: ServiceTaskView,
     model: ServiceTaskModel

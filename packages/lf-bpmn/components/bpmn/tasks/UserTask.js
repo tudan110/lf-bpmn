@@ -121,6 +121,8 @@ class UserTaskView extends RectNode {
 
 // 导出自定义节点
 export default {
+    name: '用户任务', // 必填：拖拽面板上的组件展示名称
+    icon: 'user-task', // 必填：拖拽面板上的组件图标，和 assets/icons/svgs 文件名保持一致
     type: bpmnNodeType.userTask, // 节点类型
     view: UserTaskView,
     model: UserTaskModel

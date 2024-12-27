@@ -147,6 +147,8 @@ class ScriptTaskView extends RectNode {
 
 // 导出自定义节点
 export default {
+    name: '脚本任务', // 必填：拖拽面板上的组件展示名称
+    icon: 'script-task', // 必填：拖拽面板上的组件图标，和 assets/icons/svgs 文件名保持一致
     type: bpmnNodeType.scriptTask, // 节点类型
     view: ScriptTaskView,
     model: ScriptTaskModel,

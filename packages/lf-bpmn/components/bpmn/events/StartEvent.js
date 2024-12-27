@@ -11,11 +11,11 @@
  * 6、文本节点：TextNode      import { TextNode, TextNodeModel } from "@logicflow/core"
  * 7、HTML节点：HtmlNode      import { HtmlNode, HtmlNodeModel } from "@logicflow/core"
  */
-import {bpmnConst} from '../../constants/bpmn-constant'
+import {bpmnConst, bpmnNodeType} from '../../constants/bpmn-constant'
 import {h, RectNode, RectNodeModel} from '@logicflow/core' // 用于创建虚拟dom // 用于继承基础节点
 
 // 自定义节点的model 可以修改节点的样式，基础形状，位置等
-class StartNodeModel extends RectNodeModel {
+class StartEventModel extends RectNodeModel {
 
     setAttributes() {
     }
@@ -45,7 +45,7 @@ class StartNodeModel extends RectNodeModel {
 }
 
 // 自定义节点的view 可以修改更复杂的节点样式，比如节点的图标，文字等
-class StartNodeView extends RectNode {
+class StartEventView extends RectNode {
     // 重写父类的方法
     getLabelShape() {
         const {model} = this.props
@@ -119,7 +119,9 @@ class StartNodeView extends RectNode {
 
 // 导出自定义节点
 export default {
-    type: 'bpmn:startEvent', // 节点类型
-    view: StartNodeView,
-    model: StartNodeModel
+    name: '开始事件', // 必填：拖拽面板上的组件展示名称
+    icon: 'start-event', // 必填：拖拽面板上的组件图标，和 assets/icons/svgs 文件名保持一致
+    type: bpmnNodeType.startEvent, // 节点类型
+    view: StartEventView,
+    model: StartEventModel
 }

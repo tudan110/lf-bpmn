@@ -12,6 +12,8 @@
         <div class="main-node-panel">
           <node-panel
               :lf="lf"
+              :base-components-metadata="baseComponentsMetadata"
+              :task-components-metadata="taskComponentsMetadata"
               :custom-components-metadata="customComponentsMetadata"
               v-bind="$attrs"
           />
@@ -63,7 +65,6 @@
 </template>
 
 <script type="text/ecmascript-6">
-
 // 工具类
 import extend from './utils/extend'
 
@@ -74,27 +75,30 @@ import {adapterOut} from './components/adapter/adapterOut'
 // LogicFlow
 import LogicFlow from '@logicflow/core' // 引入LogicFlow核心库
 import '@logicflow/core/dist/index.css' // 引入LogicFlow样式
-import {BpmnAdapter, BpmnElement, BpmnXmlAdapter, Menu} from '@logicflow/extension' // 引入LogicFlow扩展库
 import '@logicflow/extension/lib/style/index.css' // 引入LogicFlow扩展库样式
-// 节点
+import {BpmnAdapter, BpmnElement, BpmnXmlAdapter, Menu} from '@logicflow/extension' // 引入LogicFlow扩展库
+// 基础组件节点
 import StartEvent from './components/bpmn/events/StartEvent'
 import EndEvent from './components/bpmn/events/EndEvent'
 import TimerIntermediateCatchEvent from './components/bpmn/events/TimerIntermediateCatchEvent'
 import ExclusiveGateway from './components/bpmn/gateways/ExclusiveGateway'
 import ParallelGateway from './components/bpmn/gateways/ParallelGateway'
+// 任务组件节点
 import UserTask from './components/bpmn/tasks/UserTask'
 import ServiceTask from './components/bpmn/tasks/ServiceTask'
 import ScriptTask from './components/bpmn/tasks/ScriptTask'
+import SendTask from './components/bpmn/tasks/SendTask'
 
-// 组件
-// import EditProperties from './components/editProperties'
+// 组件面板
 import NodePanel from './components/panel/nodes/nodePanel'
+// 属性面板
+// import EditProperties from './components/editProperties'
 
 export default {
   name: 'LfBpmn',
   components: {
-    // EditProperties,
     NodePanel,
+    // EditProperties,
   },
   props: {
     showToolbar: {
@@ -115,7 +119,41 @@ export default {
       default: ''
     }
   },
+  data() {
+    return {
+      lf: null,
+      baseComponents: [StartEvent, EndEvent, TimerIntermediateCatchEvent, ExclusiveGateway, ParallelGateway],
+      taskComponents: [UserTask, ServiceTask, ScriptTask, SendTask],
+      isSilentMode: false, // 是否静默模式静默默认表示节点不能被拖动
+      stopMoveGraph: false, //禁止移动画布
+      stopScrollGraph: false, //禁止滚动移动画布
+      nodePanelExpanded: true,
+      elementType: 'base',
+      clickedElement: {},
+    }
+  },
   computed: {
+    // 基础组件元信息
+    baseComponentsMetadata() {
+      return this.baseComponents.map(item => {
+        return {
+          name: item.name,
+          icon: item.icon,
+          type: item.type,
+        }
+      })
+    },
+    // 任务组件元信息
+    taskComponentsMetadata() {
+      return this.taskComponents.map(item => {
+        return {
+          name: item.name,
+          icon: item.icon,
+          type: item.type,
+        }
+      })
+    },
+    // 自定义组件元信息
     customComponentsMetadata() {
       return this.customComponents.map(item => {
         return {
@@ -126,23 +164,10 @@ export default {
       })
     }
   },
-  data() {
-    return {
-      nodePanelExpanded: true,
-      lf: null,
-      isSilentMode: false, // 是否静默模式静默默认表示节点不能被拖动
-      stopMoveGraph: false, //禁止移动画布
-      stopScrollGraph: false, //禁止滚动移动画布
-      elementType: 'base',
-      clickedElement: {},
-    }
-  },
   created() {
-
     this.$nextTick(() => {
       this.initLf()
     })
-
   },
   mounted() {
   },
@@ -189,9 +214,8 @@ export default {
        * 2. 重写 draw 方法
        * 3. 注册
        */
-      this.lf.batchRegister([StartEvent, EndEvent, TimerIntermediateCatchEvent]) // 批量注册事件
-      this.lf.batchRegister([ExclusiveGateway, ParallelGateway,]) // 批量注册网关
-      this.lf.batchRegister([UserTask, ServiceTask, ScriptTask]) // 批量注册任务
+      this.lf.batchRegister(this.baseComponents) // 批量注册事件、网关
+      this.lf.batchRegister(this.taskComponents) // 批量注册任务
       this.lf.batchRegister(this.customComponents) // 批量注册自定义节点
 
       // 初始化渲染

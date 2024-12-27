@@ -18,7 +18,7 @@
         <div class="component-box" v-if="showBase">
           <div
               class="component-item"
-              v-for="(item, index) in baseComponents"
+              v-for="(item, index) in baseComponentsMetadata"
               :key="index"
               @mousedown="$_dragNode(item)">
             <svg-icon :icon-class="item.icon" class="component-icon"/>
@@ -42,7 +42,7 @@
         <div class="component-box" v-if="showTask">
           <div
               class="component-item"
-              v-for="(item, index) in taskComponents"
+              v-for="(item, index) in taskComponentsMetadata"
               :key="index"
               @mousedown="$_dragNode(item)">
             <svg-icon :icon-class="item.icon" class="component-icon"/>
@@ -89,6 +89,14 @@ export default {
   components: {},
   props: {
     lf: LogicFlow,
+    baseComponentsMetadata: {
+      type: Array,
+      default: () => []
+    },
+    taskComponentsMetadata: {
+      type: Array,
+      default: () => []
+    },
     customComponentsMetadata: {
       type: Array,
       default: () => []
@@ -116,21 +124,8 @@ export default {
   },
   data() {
     return {
-      loading: false,
       showBase: true,
-      baseComponents: [
-        {name: '开始事件', icon: 'start-event', type: 'bpmn:startEvent'},
-        {name: '结束事件', icon: 'end-event', type: 'bpmn:endEvent'},
-        {name: '定时中间捕获事件', icon: 'timer-intermediate-catch-event', type: 'bpmn:intermediateCatchEvent'},
-        {name: '排他网关', icon: 'exclusive-gateway', type: 'bpmn:exclusiveGateway'},
-        {name: '并行网关', icon: 'parallel-gateway', type: 'bpmn:parallelGateway'},
-      ],
       showTask: true,
-      taskComponents: [
-        {name: '用户任务', icon: 'user-task', type: 'bpmn:userTask'},
-        {name: '服务任务', icon: 'service-task', type: 'bpmn:serviceTask'},
-        {name: '脚本任务', icon: 'script-task', type: 'bpmn:scriptTask'},
-      ],
       showCustom: true,
       showAtomicPower: false,
       filterAtomicPowerParam: '', // 过滤原子能力参数

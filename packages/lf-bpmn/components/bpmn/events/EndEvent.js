@@ -11,11 +11,11 @@
  * 6、文本节点：TextNode      import { TextNode, TextNodeModel } from "@logicflow/core"
  * 7、HTML节点：HtmlNode      import { HtmlNode, HtmlNodeModel } from "@logicflow/core"
  */
-import {bpmnConst} from '../../constants/bpmn-constant'
+import {bpmnConst, bpmnNodeType} from '../../constants/bpmn-constant'
 import {h, RectNode, RectNodeModel} from '@logicflow/core' // 用于创建虚拟dom // 用于继承基础节点
 
 // 自定义节点的model 可以修改节点的样式，基础形状，位置等
-class UserTaskModel extends RectNodeModel {
+class EndEventModel extends RectNodeModel {
     setAttributes() {
     }
 
@@ -44,7 +44,7 @@ class UserTaskModel extends RectNodeModel {
 }
 
 // 自定义节点的view 可以修改更复杂的节点样式，比如节点的图标，文字等
-class UserTaskView extends RectNode {
+class EndEventView extends RectNode {
     // 重写父类的方法
     getLabelShape() {
         const {model} = this.props
@@ -121,7 +121,9 @@ class UserTaskView extends RectNode {
 
 // 导出自定义节点
 export default {
-    type: 'bpmn:endEvent', // 节点类型
-    view: UserTaskView,
-    model: UserTaskModel
+    name: '结束事件', // 必填：拖拽面板上的组件展示名称
+    icon: 'end-event', // 必填：拖拽面板上的组件图标，和 assets/icons/svgs 文件名保持一致
+    type: bpmnNodeType.endEvent, // 节点类型
+    view: EndEventView,
+    model: EndEventModel
 }
